@@ -11,8 +11,22 @@
 二叉搜索树的类，相关算法可以纳入其中  
 ### 思路
 根据输入序列的有序度来选择采用何种方式生成树？  
+### 功能
+#### Generate BST From In/Pre/Post Order Array
+
+#### Validate In/Pre/Post Order Array
+
 ### todo list
 
 * Gen BST From In/Pre/Post Order Array 
 * Delete Node
 * Balance
+* ifValidArray
+
+## sort 
+### quicksort
+
+* 现在仅可以RandomIter，如果是其它iterator怎么改？
+* stl源码的 introsort
+* partition函数，<=还是<
+

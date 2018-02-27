@@ -1,5 +1,8 @@
+#ifndef BITREE_H
+#define BITREE_H
 #include <iostream>
 #include <vector>
+#include <stack>
 template<typename T>
 struct BiTreeNode{
 	typedef BiTreeNode<T>* pointer;
@@ -15,6 +18,7 @@ class BiTree{
 	public:
 			typedef std::vector<Key> Array;
 			typedef BiTreeNode<Key> Node;
+			typedef std::stack<Node*> Stack;
 	private:
 			Node* root;
 			long long counts;
@@ -58,26 +62,124 @@ class BiTree{
 			Node* GetRoot(){
 				return root;
 			}
+			//recursive or iterative
 			Array InOrderTraversal(){
+				return InOrderTraversal(root);	
+			}
+			Array InOrderTraversal(Node* rNode){
+				Array result;
+				Stack temp;
+				Node* current=rNode;
+				while(!current||!temp.empty()){
+					while(!current){
+						temp.push(current);
+						current=current->left;
+					}
+					current=temp.top();
+					result.push_back(current->val);
+		            temp.pop();
+					current=current->right;
+				}
+				return result;
 				
 			}
-			Array PreOrderTraversal();
+			Array PreOrderTraversal(){
+				return PreOrderTraversal(root);
+			}
+			Array PreOrderTraversal(Node* rNode){
+				Array result;
+				Stack temp;
+				if(!rNode) return Array();
+				temp.push(rNode);
+				while(!temp.empty()){
+					rNode=temp.top();
+					result.push_back(rNode->val);
+		            temp.pop();
+        	    	if(rNode->right) temp.push(rNode->right);
+            		if(rNode->left) temp.push(rNode->left);
+				}
+				return result;
+			}
 			Array PostOrderTraversal();
+
+
+			/**
+			 * validate in/pre/post order array
+			 * call this function before call GenFrom**OrderArray()
+			 */
+			bool isValidInOrderArray(Array inorder){
+			
+			}
+			bool isValidPreOrderArray(Array preorder){
+				if(preorder.size()) return false;
+				Key cur=preorder[0];
+				for(int i=0;i<preorder.size();++i){
+					if(!compare(cur,preorder[i]))
+						return false;
+					cur=preorder[i];
+				}
+				return true;
+						
+			}
+			bool isValidPostOrderArray(Array postorder){
+				return isValidInOrderArray(postorder.begin(),postorder.end());
+			}
+			bool isValidPostOrderArray(typename Array::iterator begin, typename Array::iterator end){
+				if(begin==end) return true;	
+				Key rootval=*(--end);
+				typename Array::iterator middle=begin;
+				for(;middle!=end;++middle)
+					if(!compare(*middle,rootval))
+						break;
+				typename Array::iterator temp=middle;
+				for(;temp!=end;++temp)
+					if(!compare(rootval,*temp))
+						return false;
+				return isValidInOrderArray(begin,middle) && isValidInOrderArray(middle,end);
+			}
+
 			/* 
-			 *generate bst from inorder array
+			 *generate bst from inorder/preorder/postorder array
 			 *return root node if success
 			 *return NULL if fail
 			 */
-			Node* GenFromInOrderArray(Array initial ,int step=-1){
-				if(GenFromInOrderArray(initial,++step)!=NULL )
-					return NULL;
+			Node* GenFromInAndPreOrderArray(Array& inorder, Array& preorder){
+				return GenFromInAndPreOrderArray(inorder,preorder,0,inorder.size()-1,0,preorder.size()-1);	
 			}
-			/*
-			 *
-			 *
-			 */
-			Node* GenFromPreOrderArray(Array);
-			Node* GenFromPostOrderArray(Array);
+			Node* GenFromInAndPreOrderArray(Array& inorder, Array& preorder,int is, int ie, int ps, int pe){
+				if(is>ie) return NULL;
+				Key rvalue=preorder[ps];
+				Node* rNode= new Node(rvalue);
+				int i=is;
+				for(;i<=ie;++i){
+					if(inorder[i]==rvalue)
+						break;
+				}
+				root->left=GenFromPostAndInOrderArray(inorder,preorder,is,i-1,ps+1,ps+i-is);
+				root->right=GenFromPostAndInOrderArray(inorder,preorder,i+1,ie,ps+i-is+1,pe);
+				return root;
+				
+			}
+			Node* GenFromPreAndPostOrderArray(Array& preorder, Array& postorder){
+			
+			}
+			Node* GenFromPostAndInOrderArray(Array& postorder,Array& inorder){
+				return GenFromPostAndInOrderArray(postorder,inorder,0.postorder.size()-1,0,inorder.size()-1);
+			}
+			Node* GenFromPostAndInOrderArray(Array& postorder,Array& inorder, int ps, int pe, int is, int ie){
+				if(ps>pe) return NULL;
+				Key rvalue=postorder[pe];
+				Node* rNode= new Node(rvalue);
+				int i=is;
+				for(;i<=ie;++i){
+					if(inorder[i]==rvalue)
+						break;
+				}
+				root->left=GenFromPostAndInOrderArray(postorder,inorder,ps,ps+i-is-1,is,i-1);
+				root->right=GenFromPostAndInOrderArray(postorder,inorder,ps+i-is,pe-1,i+1,ie);
+				return root;
+
+			}
 
 			/*
 			 *generate bst from unsorted array, call insertNode()
@@ -120,9 +222,29 @@ class BiTree{
 				}
 				//todo
 			}
+			void deleteNode(Key k, Node* rNode){
+				if(!rNode)
+					return;
+				if(rNode->val==k)
+					deleteNode(rNode);
+				else if(compare(k,rNode->val))
+					deleteNode(k,rNode->left);
+				else
+					deleteNode(k,rNode->right);
+			}
+			void deleteNode(Key k){
+				deleteNode(k,root);
+			}
 
 			bool HasSubTree(Node*);
 
 		
 };
 
+
+
+//iterator
+
+
+
+#endif
