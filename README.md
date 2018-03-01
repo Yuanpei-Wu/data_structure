@@ -23,10 +23,17 @@
 * Balance
 * ifValidArray
 
-## sort 
-### quicksort
+## Sort
+### QuickSort
 
 * 现在仅可以RandomIter，如果是其它iterator怎么改？
 * stl源码的 introsort
 * partition函数，<=还是<
+
+### HeapSort
+
+* 进一步可以参考stl make_heap(但是用make_heap会很慢)
+* iterator和distance的使用很奇怪
+
+
 
