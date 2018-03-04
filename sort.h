@@ -14,6 +14,34 @@ template<class RandomIter>
 void HeapSort(RandomIter, RandomIter);
 template<class RandomIter,class Diff>
 void HeapAdjust(RandomIter,Diff,Diff);
+template<class RandomIter>
+void MergeSort(RandomIter begin, RandomIter end);
+template<class RandomIter, class ArrayIter>
+void MergeSortRecursively(RandomIter begin, RandomIter end, ArrayIter buf);
+template<class RandomIter, class ArrayIter>
+void Merge(RandomIter begin,RandomIter middle, RandomIter end, ArrayIter buf);
+template<class RandomIter>
+void InsertSort(RandomIter first, RandomIter last);
+template<class RandomIter>
+void SelectSort(RandomIter first, RandomIter last);
+
+
+/**
+ * SelectSort
+ */
+template<class RandomIter>
+void SelectSort(RandomIter first, RandomIter last){
+	
+}
+
+/**
+ * InsertSort
+ */
+template<class RandomIter>
+void InsertSort(RandomIter first, RandomIter last){
+
+}
+
 
 /**
  *QuickSort
@@ -40,7 +68,11 @@ void QuickSort(RandomIter first, RandomIter last){
 template<class RandomIter>
 RandomIter QSortPartition(RandomIter low,RandomIter high){
 	typedef typename std::iterator_traits<RandomIter>::value_type Type;
+	// with pivot
 	Type pivotkey=__median(*low,*(high-1),*(low+(high-1-low)/2) )	;	
+
+	//without pivot
+	/**
 	high--;
 	while(low<high){
 		while(low<high){
@@ -63,6 +95,7 @@ RandomIter QSortPartition(RandomIter low,RandomIter high){
 		}
 	}
 	return low;
+	**/
 }
 template<class T>
 const T& __median(const T& a,const T& b,const T& c){	//why return const T&?
@@ -129,6 +162,45 @@ void HeapAdjust(RandomIter begin, Diff index, Diff len){	//使用 RandomIter end
 /**
  *MergeSort
  */
+template<class RandomIter>
+void MergeSort(RandomIter begin, RandomIter end){
+	//已知iterator，如何求容器类型？似乎没办法，只能用数组
+	typedef typename std::iterator_traits<RandomIter>::value_type Value;
+	typedef typename std::iterator_traits<RandomIter>::difference_type Diff;
+	typedef typename std::iterator_traits<RandomIter>::pointer Pointer;
+	Diff len=end-begin;
+	Pointer buf=new Value[len];
+	MergeSortRecursively(begin,end,buf);
+	delete[] buf;
 
+}
+template<class RandomIter, class ArrayIter>
+void MergeSortRecursively(RandomIter begin, RandomIter end, ArrayIter buf){
+	if(begin+1<end){
+		RandomIter middle=begin+(end-begin)/2;
+		MergeSortRecursively(begin,middle,buf);
+		MergeSortRecursively(middle,end,buf);
+		Merge(begin,middle,end,buf);
+	}
+}
+template<class RandomIter, class ArrayIter>
+void Merge(RandomIter begin,RandomIter middle, RandomIter end, ArrayIter buf){
+	RandomIter i=begin,j=middle;
+	ArrayIter k=buf;	
+	while(i!=middle && j!=end){
+		if(*i<*j)
+			*k++=*i++;
+		else 
+			*k++=*j++;
+	}
+	while(i!=middle)
+		*k++=*i++;
+	while(j!=end)
+		*k++=*j++;
+	ArrayIter ini=buf;
+	for(RandomIter l=begin;l!=end;l++)
+		*l=*ini++;
+	
+}
 
 #endif
